@@ -1,8 +1,48 @@
 @import "tailwindcss";
 
+@layer utilities {
+  @keyframes gradient-x {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 3s ease infinite;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
+}
+
 :root {
   --background: #000000;
   --foreground: #ffffff;
+}
+
+html {
+  overflow-y: scroll;
 }
 
 body {
@@ -16,4 +56,33 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Custom Scrollbar - Futuristic Look */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #22d3ee;
+  /* Cyan 400 */
+  border-radius: 9999px;
+  border: 2px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+  /* Cyan 500 */
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #22d3ee #000000;
 }

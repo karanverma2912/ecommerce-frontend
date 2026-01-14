@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ProductGrid } from "./components/ProductGrid";
 
 export default function Home() {
@@ -16,7 +17,7 @@ export default function Home() {
             The Future of Shopping
           </div>
           <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-neutral-500 tracking-tight">
-            NextGen Commerce
+            NextGen Ecommerce
           </h1>
           <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-light leading-relaxed">
             Experience the next evolution of digital retail.
@@ -26,7 +27,9 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-4">
-        <ProductGrid />
+        <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center"><div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" /></div>}>
+          <ProductGrid />
+        </Suspense>
       </div>
     </main>
   );

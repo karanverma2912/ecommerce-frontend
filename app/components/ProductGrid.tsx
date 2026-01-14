@@ -86,7 +86,7 @@ export function ProductGrid() {
     if (products.length === 0) {
         return (
             <div className="text-center text-gray-500 min-h-[400px] flex flex-col items-center justify-center gap-4">
-                <p>No products found for "{query}".</p>
+                <p>No products found for &quot;{query}&quot;.</p>
                 {query && (
                     <button
                         onClick={() => router.push("/")}

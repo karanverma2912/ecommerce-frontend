@@ -7,18 +7,34 @@ interface User {
     email: string;
     first_name?: string;
     last_name?: string;
+    avatar_url?: string | null;
     // Add other fields as needed
+}
+
+interface LoginData {
+    email?: string;
+    password?: string;
+}
+
+interface RegisterData {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
 }
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
-    login: (data: any) => Promise<void>;
-    register: (data: any) => Promise<any>;
+    login: (data: LoginData) => Promise<void>;
+    register: (data: RegisterData) => Promise<void>;
     verifyOtp: (email: string, otp: string) => Promise<void>;
     resendOtp: (email: string) => Promise<void>;
     logout: () => void;
     error: string | null;
+    isAuthOpen: boolean;
+    setIsAuthOpen: (isOpen: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
 
     useEffect(() => {
         // Check for existing token and user on mount
@@ -45,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
     }, []);
 
-    const login = async (data: any) => {
+    const login = async (data: LoginData) => {
         setError(null);
         try {
             const response = await fetch("http://localhost:3000/api/v1/auth/login", {
@@ -67,13 +84,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("user", JSON.stringify(result.user));
 
             setUser(result.user);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Login failed");
             throw err;
         }
     };
 
-    const register = async (data: any) => {
+    const register = async (data: RegisterData) => {
         setError(null);
         try {
             // Rails expects user: { ... } wrapper
@@ -102,9 +119,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             // Registration successful (OTP sent), do NOT auto-login yet
-            return result;
-        } catch (err: any) {
-            setError(err.message);
+            // return result;
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Login failed");
             throw err;
         }
     };
@@ -129,8 +146,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem("user", JSON.stringify(result.user));
 
             setUser(result.user);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Login failed");
             throw err;
         }
     };
@@ -149,8 +166,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!response.ok) {
                 throw new Error(result.error || "Resend failed");
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Login failed");
             throw err;
         }
     };
@@ -162,7 +179,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, verifyOtp, resendOtp, logout, error }}>
+        <AuthContext.Provider value={{
+            user,
+            loading,
+            login,
+            register,
+            verifyOtp,
+            resendOtp,
+            logout,
+            error,
+            isAuthOpen,
+            setIsAuthOpen
+        }}>
             {children}
         </AuthContext.Provider>
     );

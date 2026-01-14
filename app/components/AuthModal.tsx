@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Mail, Lock, User, MapPin, Eye, EyeOff, Loader2 } from "lucide-react";
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
@@ -78,8 +78,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 setStep('otp'); // Switch to OTP view
                 setTimer(30);   // Start timer
             }
-        } catch (err: any) {
-            setLocalError(err.message || "Authentication failed");
+        } catch (err: unknown) {
+            setLocalError(err instanceof Error ? err.message : "Authentication failed");
         } finally {
             setIsLoading(false);
         }
@@ -93,8 +93,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         try {
             await verifyOtp(email, otp);
             onClose(); // Close modal on success
-        } catch (err: any) {
-            setLocalError(err.message || "Verification failed");
+        } catch (err: unknown) {
+            setLocalError(err instanceof Error ? err.message : "Verification failed");
         } finally {
             setIsLoading(false);
         }
@@ -106,8 +106,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         setTimer(30); // Optimistic update
         try {
             await resendOtp(email);
-        } catch (err: any) {
-            setLocalError(err.message || "Failed to resend code");
+        } catch (err: unknown) {
+            setLocalError(err instanceof Error ? err.message : "Failed to resend code");
             setTimer(0); // Revert if failed
         }
     };
