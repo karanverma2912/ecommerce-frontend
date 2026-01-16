@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ShoppingCart, User, Search, Heart } from "lucide-react";
+import { ShoppingCart, User, Search, Heart } from "lucide-react";
 import { SearchBar } from "./SearchBar";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthModal } from "./AuthModal";
@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 const API_BASE_URL = "http://localhost:3000/api/v1";
 
 export function Navbar() {
-    const [isOpen, setIsOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { user, isAuthOpen, setIsAuthOpen } = useAuth();
     const { totalItems } = useCart();
@@ -30,8 +29,9 @@ export function Navbar() {
                     {/* Logo - Desktop: Col 1-3 */}
                     <div className="flex-shrink-0 md:col-span-3 flex justify-start">
                         <Link href="/" className="flex items-center gap-2">
-                            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 animate-gradient-x">
-                                NextGen
+                            <span className="text-2xl font-bold">
+                                <span className="text-white">Next</span>
+                                <span className="text-cyan-400">Gen</span>
                             </span>
                         </Link>
                     </div>
@@ -80,7 +80,7 @@ export function Navbar() {
                                                     unoptimized
                                                 />
                                             ) : (
-                                                <>{user.first_name?.[0] || "U"}{user.last_name?.[0]}</>
+                                                <>{(user.first_name?.[0] || "U").toUpperCase()}{(user.last_name?.[0] || "").toUpperCase()}</>
                                             )}
                                         </div>
                                     </Link>
@@ -138,18 +138,79 @@ export function Navbar() {
 
                     {/* Mobile Interactions */}
                     <div className="flex md:hidden items-center gap-4">
+                        {/* Search Icon */}
                         <button
                             onClick={() => setIsSearchOpen(!isSearchOpen)}
                             className="text-gray-300 hover:text-cyan-400 transition-colors"
                         >
                             <Search size={24} />
                         </button>
+
+                        {/* Wishlist Icon */}
                         <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="text-gray-300 hover:text-cyan-400 transition-colors"
+                            onClick={() => {
+                                if (user) {
+                                    router.push("/wishlist");
+                                } else {
+                                    setIsAuthOpen(true);
+                                }
+                            }}
+                            className="text-gray-300 hover:text-cyan-400 transition-colors relative"
                         >
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
+                            <Heart size={24} />
+                            {wishlistIds.length > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-cyan-600 text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center">
+                                    {wishlistIds.length}
+                                </span>
+                            )}
                         </button>
+
+                        {/* Cart Icon */}
+                        <button
+                            onClick={() => {
+                                if (user) {
+                                    router.push("/cart");
+                                } else {
+                                    setIsAuthOpen(true);
+                                }
+                            }}
+                            className="text-gray-300 hover:text-cyan-400 transition-colors relative"
+                        >
+                            <ShoppingCart size={24} />
+                            {totalItems > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-cyan-600 text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center">
+                                    {totalItems}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Profile Icon */}
+                        {user ? (
+                            <Link href="/profile" className="text-gray-300 hover:text-cyan-400 transition-colors">
+                                <div className="h-6 w-6 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold overflow-hidden relative">
+                                    {user.avatar_url ? (
+                                        <Image
+                                            src={(user.avatar_url.startsWith("http") ? user.avatar_url : `${API_BASE_URL.replace("/api/v1", "")}${user.avatar_url}`)}
+                                            alt="Avatar"
+                                            fill
+                                            className="object-cover"
+                                            unoptimized
+                                        />
+                                    ) : (
+                                        <span className="text-xs">
+                                            {(user.first_name?.[0] || "U").toUpperCase()}{(user.last_name?.[0] || "").toUpperCase()}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={() => setIsAuthOpen(true)}
+                                className="text-gray-300 hover:text-cyan-400 transition-colors"
+                            >
+                                <User size={24} />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -167,73 +228,6 @@ export function Navbar() {
                             <Suspense fallback={<div className="h-10 w-full bg-white/5 rounded-lg animate-pulse" />}>
                                 <SearchBar />
                             </Suspense>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="md:hidden bg-black/95 border-b border-white/10 absolute w-full"
-                    >
-                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                            {user ? (
-                                <div className="px-3 py-2">
-                                    <Link href="/profile" onClick={() => setIsOpen(false)}>
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="h-8 w-8 rounded-full bg-cyan-500/20 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold overflow-hidden relative">
-                                                {user.avatar_url ? (
-                                                    <Image
-                                                        src={(user.avatar_url.startsWith("http") ? user.avatar_url : `${API_BASE_URL.replace("/api/v1", "")}${user.avatar_url}`)}
-                                                        alt="Avatar"
-                                                        fill
-                                                        className="object-cover"
-                                                        unoptimized
-                                                    />
-                                                ) : (
-                                                    <>{user.first_name?.[0] || "U"}{user.last_name?.[0]}</>
-                                                )}
-                                            </div>
-                                            <div className="text-base font-medium text-white">
-                                                {user.first_name || "User"} {user.last_name}
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <button
-                                    onClick={() => {
-                                        setIsOpen(false);
-                                        setIsAuthOpen(true);
-                                    }}
-                                    className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors"
-                                >
-                                    <User size={20} />
-                                    Sign In / Sign Up
-                                </button>
-                            )}
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    if (!user) {
-                                        setIsAuthOpen(true);
-                                    } else {
-                                        router.push("/cart");
-                                    }
-                                }}
-                                className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors cursor-pointer"
-                            >
-                                <ShoppingCart size={20} />
-                                Cart
-                                <span className="ml-auto bg-cyan-600 text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center">
-                                    {totalItems}
-                                </span>
-                            </button>
                         </div>
                     </motion.div>
                 )}

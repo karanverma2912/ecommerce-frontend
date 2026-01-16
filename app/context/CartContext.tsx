@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { Product } from "../types";
 import { useAuth } from "./AuthContext";
 
@@ -39,6 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const { user } = useAuth();
+    const isFirstFetch = useRef(true);
 
     const fetchCart = useCallback(async () => {
         if (!user) {
@@ -47,7 +48,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
 
         // Initial load only if empty
-        if (items.length === 0) setLoading(true);
+        if (isFirstFetch.current) setLoading(true);
 
         try {
             const token = localStorage.getItem("token");
@@ -68,6 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             console.error("Failed to fetch cart:", error);
         } finally {
             setLoading(false);
+            isFirstFetch.current = false;
         }
     }, [user]);
 

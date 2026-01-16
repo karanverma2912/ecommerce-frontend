@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ProductGrid } from "./components/ProductGrid";
+import { ProductGrid } from "../components/ProductGrid";
 
 export default function Home() {
   return (

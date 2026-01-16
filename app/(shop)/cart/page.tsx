@@ -1,7 +1,7 @@
 "use client";
 
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -46,8 +46,8 @@ export default function CartPage() {
     // Variants for page entry/exit animation
     const pageVariants = {
         initial: { opacity: 0, scale: 0.98 },
-        animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
-        exit: { opacity: 0, scale: 0.98, transition: { duration: 0.3, ease: "easeIn" } }
+        animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" as const } },
+        exit: { opacity: 0, scale: 0.98, transition: { duration: 0.3, ease: "easeIn" as const } }
     };
 
     return (
@@ -105,12 +105,12 @@ export default function CartPage() {
                             {/* Scrollable Product List */}
                             <div className="lg:col-span-8 h-full overflow-y-auto pr-2 custom-scrollbar pb-20">
                                 <div className="space-y-4">
-                                    {items.map((item, index) => (
+                                    {items.map((item) => (
                                         <motion.div
                                             key={item.id}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.05 }}
+                                            transition={{ duration: 0.3, ease: "easeInOut" as const }}
                                             className="group relative bg-neutral-900/20 border border-white/5 rounded-2xl p-4 transition-all duration-300 hover:bg-white/5 hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(34,211,238,0.05)]"
                                         >
                                             <div className="flex gap-5">

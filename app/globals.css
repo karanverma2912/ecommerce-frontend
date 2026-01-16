@@ -58,31 +58,29 @@ body {
   }
 }
 
-/* Custom Scrollbar - Futuristic Look */
+/* Custom Scrollbar - Admin Theme */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #22d3ee;
-  /* Cyan 400 */
+  background: rgba(42, 126, 116, 0.2);
+  /* #2A7E74 with opacity */
   border-radius: 9999px;
-  border: 2px solid #000000;
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #06b6d4;
-  /* Cyan 500 */
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+  background: rgba(42, 126, 116, 0.5);
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #22d3ee #000000;
+  scrollbar-color: rgba(42, 126, 116, 0.2) transparent;
 }

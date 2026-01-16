@@ -1,12 +1,14 @@
 "use client";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { LogOut, Save, Camera, User as UserIcon, MapPin, Mail, Phone, Globe } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LogOut, Save, Camera, User as UserIcon, MapPin, Mail, Phone, Globe, X, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "../../utils/canvasUtils";
 
 interface UserProfile {
     first_name: string;
@@ -21,10 +23,24 @@ interface UserProfile {
     avatar_url: string | null;
 }
 
+interface CroppedArea {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+interface CroppedAreaPixels {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 const API_BASE_URL = "http://localhost:3000/api/v1";
 
 export default function ProfilePage() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUser } = useAuth();
     const router = useRouter();
     const [profile, setProfile] = useState<UserProfile>({
         first_name: "",
@@ -42,6 +58,13 @@ export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Cropping State
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<CroppedArea | null>(null);
+    const [isCropping, setIsCropping] = useState(false);
 
     // Initial Fetch
     useEffect(() => {
@@ -95,18 +118,47 @@ export default function ProfilePage() {
         fileInputRef.current?.click();
     };
 
+    const onCropComplete = (croppedArea: CroppedArea, croppedAreaPixels: CroppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    };
+
+    const readFile = (file: File) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.addEventListener("load", () => resolve(reader.result), false);
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const imageDataUrl = await readFile(file);
+            setImageSrc(imageDataUrl as string);
+            setIsCropping(true);
+            // Reset input so same file can be selected again if cancelled
+            e.target.value = "";
+        }
+    };
 
-        const formData = new FormData();
-        formData.append("avatar", file);
-
-        const loadingToast = toast.loading("Uploading avatar...");
+    const uploadCroppedImage = async () => {
+        if (!imageSrc || !croppedAreaPixels) return;
 
         try {
             setSaving(true);
+            const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+
+            if (!croppedImageBlob) {
+                toast.error("Failed to crop image");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("avatar", croppedImageBlob, "avatar.jpg");
+
+            const loadingToast = toast.loading("Uploading avatar...");
             const token = localStorage.getItem("token");
+
             const response = await fetch(`${API_BASE_URL}/user`, {
                 method: "PATCH",
                 headers: {
@@ -123,12 +175,16 @@ export default function ProfilePage() {
                 const updatedProfile = { ...profile, avatar_url: newAvatarUrl };
                 setProfile(updatedProfile);
 
-                // Update initialProfile as well since the avatar is effectively "saved"
                 if (initialProfile) {
                     setInitialProfile({ ...initialProfile, avatar_url: newAvatarUrl });
                 }
 
+                // Update global auth context
+                updateUser({ avatar_url: newAvatarUrl });
+
                 toast.success("Avatar updated successfully", { id: loadingToast });
+                setIsCropping(false);
+                setImageSrc(null);
             } else {
                 const errorData = await response.json();
                 const errorMessage = Array.isArray(errorData.errors) ? errorData.errors.join(", ") : "Failed to upload avatar";
@@ -136,13 +192,9 @@ export default function ProfilePage() {
             }
         } catch (error) {
             console.error("Upload error", error);
-            toast.error("Error uploading avatar. Please try again.", { id: loadingToast });
+            toast.error("Error uploading avatar. Please try again.");
         } finally {
             setSaving(false);
-            // Reset file input
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
         }
     };
 
@@ -176,6 +228,15 @@ export default function ProfilePage() {
                 const newProfile = { ...profile, ...data };
                 setProfile(newProfile);
                 setInitialProfile(newProfile);
+
+                // Update global auth context
+                updateUser({
+                    first_name: newProfile.first_name,
+                    last_name: newProfile.last_name,
+                    email: newProfile.email, // In case it was updated
+                    // Add other fields to User interface if they are meant to be global
+                });
+
                 toast.success("Profile updated successfully", { id: loadingToast });
             } else {
                 const errorData = await response.json();
@@ -263,7 +324,8 @@ export default function ProfilePage() {
                     {/* Basic Info & Logout */}
                     <div className="flex-1 w-full flex justify-between items-start">
                         <div>
-                            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 mb-2">
+                            {/* Static color as requested */}
+                            <h1 className="text-4xl font-bold text-cyan-400 mb-2">
                                 {profile.first_name || "User"} {profile.last_name}
                             </h1>
                             <div className="flex items-center gap-2 text-gray-400 mb-1">
@@ -413,6 +475,92 @@ export default function ProfilePage() {
                     </form>
                 </div>
             </div>
+
+            {/* Cropping Modal */}
+            <AnimatePresence>
+                {isCropping && imageSrc && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+                    >
+                        <div className="relative w-full max-w-2xl bg-neutral-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[600px]">
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black/20">
+                                <h3 className="text-lg font-bold text-white">Adjust Avatar</h3>
+                                <button
+                                    onClick={() => {
+                                        setIsCropping(false);
+                                        setImageSrc(null);
+                                    }}
+                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                >
+                                    <X size={20} className="text-gray-400" />
+                                </button>
+                            </div>
+
+                            {/* Cropper Area */}
+                            <div className="relative flex-1 bg-black">
+                                <Cropper
+                                    image={imageSrc}
+                                    crop={crop}
+                                    zoom={zoom}
+                                    aspect={1}
+                                    onCropChange={setCrop}
+                                    onCropComplete={onCropComplete}
+                                    onZoomChange={setZoom}
+                                    classes={{
+                                        containerClassName: "relative w-full h-full",
+                                        mediaClassName: "",
+                                        cropAreaClassName: "border-2 border-cyan-500 shadow-[0_0_50px_rgba(34,211,238,0.3)]",
+                                    }}
+                                />
+                            </div>
+
+                            {/* Controls */}
+                            <div className="p-6 border-t border-white/10 bg-neutral-900 space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm text-gray-400 w-12">Zoom</span>
+                                    <input
+                                        type="range"
+                                        value={zoom}
+                                        min={1}
+                                        max={3}
+                                        step={0.1}
+                                        aria-labelledby="Zoom"
+                                        onChange={(e) => setZoom(Number(e.target.value))}
+                                        className="flex-1 h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                                    />
+                                </div>
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        onClick={() => {
+                                            setIsCropping(false);
+                                            setImageSrc(null);
+                                        }}
+                                        className="px-6 py-2.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={uploadCroppedImage}
+                                        disabled={saving}
+                                        className="flex items-center gap-2 px-8 py-2.5 rounded-full bg-cyan-600 text-white font-bold hover:bg-cyan-500 transition-colors shadow-lg hover:shadow-cyan-500/25"
+                                    >
+                                        {saving ? (
+                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <Check size={18} />
+                                        )}
+                                        Save Avatar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }

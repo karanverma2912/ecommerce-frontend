@@ -35,6 +35,7 @@ interface AuthContextType {
     error: string | null;
     isAuthOpen: boolean;
     setIsAuthOpen: (isOpen: boolean) => void;
+    updateUser: (userData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,6 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setLoading(false);
     }, []);
+
+    const updateUser = (userData: Partial<User>) => {
+        setUser(prevUser => {
+            if (!prevUser) return null;
+            const newUser = { ...prevUser, ...userData };
+            localStorage.setItem("user", JSON.stringify(newUser));
+            return newUser;
+        });
+    };
 
     const login = async (data: LoginData) => {
         setError(null);
@@ -189,7 +199,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             logout,
             error,
             isAuthOpen,
-            setIsAuthOpen
+            setIsAuthOpen,
+            updateUser
         }}>
             {children}
         </AuthContext.Provider>

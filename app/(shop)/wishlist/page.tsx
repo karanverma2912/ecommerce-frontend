@@ -1,16 +1,20 @@
 "use client";
 
-import { useWishlist } from "../context/WishlistContext";
-import { useAuth } from "../context/AuthContext";
-import { ProductCard } from "../components/ProductCard";
+import { useWishlist } from "../../context/WishlistContext";
+import { useAuth } from "../../context/AuthContext";
+import { ProductCard } from "../../components/ProductCard";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function WishlistPage() {
-    const { wishlistItems, loading } = useWishlist();
+    const { wishlistItems, loading, fetchWishlist } = useWishlist();
     const { user } = useAuth();
     const router = useRouter();
+
+    useEffect(() => {
+        fetchWishlist();
+    }, [fetchWishlist]);
 
     useEffect(() => {
         if (!user) {
@@ -58,9 +62,19 @@ export default function WishlistPage() {
                     </motion.div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {wishlistItems.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
+                        <AnimatePresence mode="popLayout">
+                            {wishlistItems.map((product) => (
+                                <motion.div
+                                    key={product.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                                >
+                                    <ProductCard product={product} />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
                 )}
             </div>
