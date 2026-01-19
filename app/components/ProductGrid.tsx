@@ -113,19 +113,19 @@ export function ProductGrid() {
                     <button
                         onClick={() => handlePageChange(meta.current_page - 1)}
                         disabled={meta.current_page === 1}
-                        className="p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white"
+                        className="p-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-900 dark:text-white"
                     >
                         <ChevronLeft size={20} />
                     </button>
 
-                    <span className="text-sm text-neutral-400">
-                        Page <span className="text-white font-medium">{meta.current_page}</span> of <span className="text-white font-medium">{meta.total_pages}</span>
+                    <span className="text-sm text-gray-600 dark:text-neutral-400">
+                        Page <span className="text-gray-900 dark:text-white font-medium">{meta.current_page}</span> of <span className="text-gray-900 dark:text-white font-medium">{meta.total_pages}</span>
                     </span>
 
                     <button
                         onClick={() => handlePageChange(meta.current_page + 1)}
                         disabled={meta.current_page === meta.total_pages}
-                        className="p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-white"
+                        className="p-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-900 dark:text-white"
                     >
                         <ChevronRight size={20} />
                     </button>

@@ -68,10 +68,10 @@ export function ProductCard({ product }: ProductCardProps) {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
-            className="group relative bg-neutral-900/50 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-colors duration-300 shadow-xl"
+            className="group relative bg-white dark:bg-neutral-900/50 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-colors duration-300 shadow-xl"
         >
             {/* Image Container */}
-            <div className="relative aspect-[4/3] sm:aspect-square overflow-hidden bg-neutral-800">
+            <div className="relative aspect-[4/3] sm:aspect-square overflow-hidden bg-gray-100 dark:bg-neutral-800">
                 <Image
                     src={primaryImage}
                     alt={product.name}
@@ -80,10 +80,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 />
 
                 {/* Overlay Actions */}
-                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-between items-center bg-gradient-to-t from-black/80 to-transparent">
+                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-between items-center bg-gradient-to-t from-white/90 dark:from-black/80 to-transparent">
                     <button
                         onClick={handleLikePrototype}
-                        className={cn("transition-colors p-2 rounded-full hover:bg-white/10", isLiked ? "text-red-500" : "text-white hover:text-red-400")}
+                        className={cn("transition-colors p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10", isLiked ? "text-red-500" : "text-gray-900 dark:text-white hover:text-red-500 dark:hover:text-red-400")}
                     >
                         <Heart size={24} fill={isLiked ? "currentColor" : "none"} />
                     </button>
@@ -110,10 +110,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
             {/* Content */}
             <div className="p-5 space-y-3">
-                <h3 className="text-xl font-bold text-white truncate group-hover:text-cyan-400 transition-colors">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                     {product.name}
                 </h3>
-                <p className="text-neutral-400 text-sm line-clamp-2 min-h-[40px]">
+                <p className="text-gray-600 dark:text-neutral-400 text-sm line-clamp-2 min-h-[40px]">
                     {product.description}
                 </p>
 
@@ -121,21 +121,21 @@ export function ProductCard({ product }: ProductCardProps) {
                     <div className="flex flex-col">
                         {product.discount_percentage ? (
                             <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-white">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                     ₹{Number(product.discount_price).toFixed(2)}
                                 </span>
-                                <span className="text-sm text-neutral-500 line-through">
+                                <span className="text-sm text-gray-400 dark:text-neutral-500 line-through">
                                     ₹{Number(product.price).toFixed(2)}
                                 </span>
                             </div>
                         ) : (
-                            <span className="text-2xl font-bold text-white">
+                            <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                 ₹{Number(product.price).toFixed(2)}
                             </span>
                         )}
                     </div>
                     <div className={cn("px-2 py-1 rounded text-xs font-semibold",
-                        product.in_stock ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"
+                        product.in_stock ? "bg-green-500/10 text-green-600 dark:text-green-400" : "bg-red-500/10 text-red-600 dark:text-red-400"
                     )}>
                         {product.in_stock ? "In Stock" : "Out of Stock"}
                     </div>

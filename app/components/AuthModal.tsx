@@ -132,19 +132,19 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-md bg-neutral-900/60 backdrop-blur-3xl border border-white/10 ring-1 ring-white/5 rounded-2xl shadow-2xl shadow-cyan-500/10 overflow-hidden"
+                    className="relative w-full max-w-md bg-white/90 dark:bg-neutral-900/60 backdrop-blur-3xl border border-black/10 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 rounded-2xl shadow-2xl shadow-cyan-500/10 overflow-hidden"
                 >
                     {/* Close Button */}
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 text-neutral-400 hover:text-cyan-400 transition-colors z-10"
+                        className="absolute top-4 right-4 text-gray-500 dark:text-neutral-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors z-10"
                     >
                         <X size={20} />
                     </button>
 
                     {/* Header */}
                     <div className="p-8 pb-0 text-center">
-                        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-400 mb-6">
+                        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-neutral-400 mb-6">
                             {step === 'otp'
                                 ? "Verify Email"
                                 : (isLogin ? "Welcome Back" : "Create Account")}
@@ -157,12 +157,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         )}
 
                         {step === 'form' && (
-                            <div className="flex p-1 bg-white/5 rounded-xl">
+                            <div className="flex p-1 bg-gray-100 dark:bg-white/5 rounded-xl">
                                 <button
                                     onClick={() => setIsLogin(true)}
                                     className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer duration-200 ${isLogin
                                         ? "bg-cyan-600 text-white shadow-lg shadow-cyan-900/20"
-                                        : "text-neutral-400 hover:text-white"
+                                        : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
                                         }`}
                                 >
                                     Sign In
@@ -171,7 +171,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                     onClick={() => setIsLogin(false)}
                                     className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all cursor-pointer duration-200 ${!isLogin
                                         ? "bg-cyan-600 text-white shadow-lg shadow-cyan-900/20"
-                                        : "text-neutral-400 hover:text-white"
+                                        : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
                                         }`}
                                 >
                                     Sign Up
@@ -190,8 +190,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
                                 >
-                                    <p className="text-neutral-400 text-sm text-center mb-6">
-                                        We sent a 6-digit code to <span className="text-white">{email}</span>.
+                                    <p className="text-gray-600 dark:text-neutral-400 text-sm text-center mb-6">
+                                        We sent a 6-digit code to <span className="text-gray-900 dark:text-white">{email}</span>.
                                         Enter it below to confirm your account.
                                     </p>
                                     <form onSubmit={handleVerifyOtp} className="space-y-6">
@@ -202,7 +202,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                 placeholder="000000"
                                                 value={otp}
                                                 onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg py-3 text-center text-2xl tracking-[0.5em] text-cyan-400 font-mono focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-neutral-700"
+                                                className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg py-3 text-center text-2xl tracking-[0.5em] text-cyan-600 dark:text-cyan-400 font-mono focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-gray-400 dark:placeholder:text-neutral-700"
                                             />
                                         </div>
 
@@ -219,7 +219,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                 type="button"
                                                 onClick={handleResendOtp}
                                                 disabled={timer > 0}
-                                                className={`text-xs ${timer > 0 ? 'text-neutral-600' : 'text-cyan-400 hover:text-white'} transition-colors`}
+                                                className={`text-xs ${timer > 0 ? 'text-gray-500 dark:text-neutral-600' : 'text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-white'} transition-colors`}
                                             >
                                                 {timer > 0 ? `Resend code in ${timer}s` : "Resend Verification Code"}
                                             </button>
@@ -239,9 +239,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                             {!isLogin && (
                                                 <div className="grid grid-cols-2 gap-4 mb-4">
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-medium text-neutral-400">First Name</label>
+                                                        <label className="text-xs font-medium text-gray-500 dark:text-neutral-400">First Name</label>
                                                         <div className="relative">
-                                                            <User className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+                                                            <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-neutral-500" />
                                                             <input
                                                                 type="text"
                                                                 placeholder="John"
@@ -249,14 +249,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                                 autoComplete="given-name"
                                                                 value={firstName}
                                                                 onChange={(e) => setFirstName(e.target.value)}
-                                                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                                className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-gray-500 dark:placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:black] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-medium text-neutral-400">Last Name</label>
+                                                        <label className="text-xs font-medium text-gray-500 dark:text-neutral-400">Last Name</label>
                                                         <div className="relative">
-                                                            <User className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+                                                            <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-neutral-500" />
                                                             <input
                                                                 type="text"
                                                                 placeholder="Doe"
@@ -264,7 +264,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                                 autoComplete="family-name"
                                                                 value={lastName}
                                                                 onChange={(e) => setLastName(e.target.value)}
-                                                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                                className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-gray-500 dark:placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:black] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                                             />
                                                         </div>
                                                     </div>
@@ -272,9 +272,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                             )}
 
                                             <div className="space-y-2 mb-4">
-                                                <label className="text-xs font-medium text-neutral-400">Email Address</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-neutral-400">Email Address</label>
                                                 <div className="relative">
-                                                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+                                                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-neutral-500" />
                                                     <input
                                                         type="email"
                                                         placeholder="john@example.com"
@@ -282,15 +282,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                         autoComplete="email"
                                                         value={email}
                                                         onChange={(e) => setEmail(e.target.value)}
-                                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                        className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-gray-500 dark:placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:black] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                                     />
                                                 </div>
                                             </div>
 
                                             <div className="space-y-2 mb-4">
-                                                <label className="text-xs font-medium text-neutral-400">Password</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-neutral-400">Password</label>
                                                 <div className="relative">
-                                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+                                                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-neutral-500" />
                                                     <input
                                                         type={showPassword ? "text" : "password"}
                                                         placeholder="••••••••"
@@ -298,12 +298,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                         autoComplete={isLogin ? "current-password" : "new-password"}
                                                         value={password}
                                                         onChange={(e) => setPassword(e.target.value)}
-                                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-10 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                        className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg pl-9 pr-10 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-gray-500 dark:placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:black] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowPassword(!showPassword)}
-                                                        className="absolute right-3 top-2.5 text-neutral-500 hover:text-white transition-colors focus:outline-none"
+                                                        className="absolute right-3 top-2.5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-white transition-colors focus:outline-none"
                                                     >
                                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                                     </button>
@@ -312,9 +312,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
                                             {!isLogin && (
                                                 <div className="space-y-2 mb-6">
-                                                    <label className="text-xs font-medium text-neutral-400">Confirm Password</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-neutral-400">Confirm Password</label>
                                                     <div className="relative">
-                                                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+                                                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 dark:text-neutral-500" />
                                                         <input
                                                             type={showConfirmPassword ? "text" : "password"}
                                                             placeholder="••••••••"
@@ -322,15 +322,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                                             autoComplete="new-password"
                                                             value={confirmPassword}
                                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                                            className={`w-full bg-white/5 border rounded-lg pl-9 pr-10 py-2 text-sm text-white focus:outline-none transition-colors placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:white] ${!isLogin && confirmPassword && password !== confirmPassword
+                                                            className={`w-full bg-gray-100 dark:bg-white/5 border rounded-lg pl-9 pr-10 py-2 text-sm text-gray-900 dark:text-white focus:outline-none transition-colors placeholder:text-gray-500 dark:placeholder:text-neutral-600 [&:-webkit-autofill]:[transition:background-color_5000s_ease-in-out_0s] [&:-webkit-autofill]:[-webkit-text-fill-color:black] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] ${!isLogin && confirmPassword && password !== confirmPassword
                                                                 ? "border-red-500/50 focus:border-red-500"
-                                                                : "border-white/10 focus:border-cyan-500/50"
+                                                                : "border-gray-200 dark:border-white/10 focus:border-cyan-500/50"
                                                                 }`}
                                                         />
                                                         <button
                                                             type="button"
                                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                            className="absolute right-3 top-2.5 text-neutral-500 hover:text-white transition-colors focus:outline-none"
+                                                            className="absolute right-3 top-2.5 text-gray-400 dark:text-neutral-500 hover:text-gray-600 dark:hover:text-white transition-colors focus:outline-none"
                                                         >
                                                             {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                                         </button>
@@ -362,11 +362,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         </AnimatePresence>
 
                         {step === 'form' && (
-                            <p className="mt-6 text-center text-xs text-neutral-500">
+                            <p className="mt-6 text-center text-xs text-gray-500 dark:text-neutral-500">
                                 {isLogin ? "Don't have an account? " : "Already have an account? "}
                                 <button
                                     onClick={() => setIsLogin(!isLogin)}
-                                    className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                                    className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 font-medium transition-colors"
                                 >
                                     {isLogin ? "Sign up" : "Sign in"}
                                 </button>
