@@ -28,6 +28,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
     const [localError, setLocalError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [highlightVerify, setHighlightVerify] = useState(false);
 
     // Reset state when modal opens
     useEffect(() => {
@@ -42,8 +43,30 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             setConfirmPassword("");
             setFirstName("");
             setLastName("");
+            setHighlightVerify(false);
         }
     }, [isOpen]);
+
+    const handleVerifyEmailClick = async () => {
+        if (!email) {
+            setLocalError("Please enter your email to verify");
+            return;
+        }
+
+        setLocalError(null);
+        setIsLoading(true);
+
+        try {
+            await resendOtp(email);
+            setStep('otp');
+            setTimer(30);
+            setHighlightVerify(false);
+        } catch (err: unknown) {
+            setLocalError(err instanceof Error ? err.message : "Failed to send verification code");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // Timer Logic
     useEffect(() => {
@@ -60,6 +83,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         e.preventDefault();
         setLocalError(null);
         setIsLoading(true);
+        setHighlightVerify(false);
 
         // Slight artificial delay to show animation if the API is too fast (optional, but good for "feel")
         // await new Promise(resolve => setTimeout(resolve, 500)); 
@@ -79,7 +103,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 setTimer(30);   // Start timer
             }
         } catch (err: unknown) {
-            setLocalError(err instanceof Error ? err.message : "Authentication failed");
+            const errorMessage = err instanceof Error ? err.message : "Authentication failed";
+            setLocalError(errorMessage);
+
+            if (errorMessage === "Please verify your email address before logging in.") {
+                setHighlightVerify(true);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -112,11 +141,23 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         }
     };
 
+    // Prevent scrolling when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] h-screen w-screen flex items-center justify-center p-4">
+            <div className="fixed inset-0 h-screen w-screen flex items-center justify-center p-4">
                 {/* Backdrop - Transparent Blur */}
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -132,7 +173,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-md bg-white/90 dark:bg-neutral-900/60 backdrop-blur-3xl border border-black/10 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 rounded-2xl shadow-2xl shadow-cyan-500/10 overflow-hidden"
+                    className="relative z-[9999] w-full max-w-md bg-white/90 dark:bg-neutral-900/60 backdrop-blur-3xl border border-black/10 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 rounded-2xl shadow-2xl shadow-cyan-500/10 overflow-hidden"
                 >
                     {/* Close Button */}
                     <button
@@ -362,15 +403,40 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         </AnimatePresence>
 
                         {step === 'form' && (
-                            <p className="mt-6 text-center text-xs text-gray-500 dark:text-neutral-500">
-                                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                                <button
-                                    onClick={() => setIsLogin(!isLogin)}
-                                    className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 font-medium transition-colors"
-                                >
-                                    {isLogin ? "Sign up" : "Sign in"}
-                                </button>
-                            </p>
+                            <div className="mt-6 flex flex-col items-center gap-2">
+                                <p className="text-center text-xs text-gray-500 dark:text-neutral-500">
+                                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                                    <button
+                                        onClick={() => setIsLogin(!isLogin)}
+                                        className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 font-medium transition-colors cursor-pointer"
+                                    >
+                                        {isLogin ? "Sign up" : "Sign in"}
+                                    </button>
+                                </p>
+                                <AnimatePresence>
+                                    {(highlightVerify || isLogin) && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <p className="text-center text-xs text-gray-500 dark:text-neutral-500 mt-2">
+                                                Status not verified?{" "}
+                                                <button
+                                                    onClick={handleVerifyEmailClick}
+                                                    className={`font-medium transition-all duration-300 cursor-pointer ${highlightVerify
+                                                        ? "text-rose-600 dark:text-rose-400 animate-pulse font-bold drop-shadow-[0_0_8px_rgba(225,29,72,0.5)]"
+                                                        : "text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300"
+                                                        }`}
+                                                >
+                                                    Verify Email
+                                                </button>
+                                            </p>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         )}
                     </div>
                 </motion.div>

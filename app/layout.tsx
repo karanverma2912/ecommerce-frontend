@@ -33,6 +33,32 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var storageKey = 'theme';
+                  var className = 'dark';
+                  var theme = localStorage.getItem(storageKey);
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var systemTheme = supportDarkMode ? 'dark' : 'light';
+                  
+                  // Default to dark if no storage
+                  if (!theme) {
+                    document.documentElement.classList.add(className);
+                  } else {
+                    if (theme === 'dark') {
+                      document.documentElement.classList.add(className);
+                    } else {
+                      document.documentElement.classList.remove(className);
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <AuthProvider>
           <ThemeProvider>
             {children}

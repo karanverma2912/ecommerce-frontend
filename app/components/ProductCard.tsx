@@ -120,7 +120,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
                         {product.discount_percentage ? (
-                            <div className="flex items-baseline gap-2">
+                            <div className="flex items-baseline gap-1">
                                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                     ₹{Number(product.discount_price).toFixed(2)}
                                 </span>
