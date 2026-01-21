@@ -3,7 +3,9 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, User, Search, Heart, Sun, Moon } from "lucide-react";
+import { ShoppingCart, User, Search, Heart, Sun, Moon, Bell } from "lucide-react";
+import { NotificationDropdown } from "@/app/components/NotificationDropdown";
+import { unreadCount } from "@/app/data/notifications";
 import { SearchBar } from "./SearchBar";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthModal } from "./AuthModal";
@@ -17,6 +19,7 @@ import { useRouter } from "next/navigation";
 const API_BASE_URL = "http://localhost:3000/api/v1";
 
 export function Navbar() {
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { user, isAuthOpen, setIsAuthOpen } = useAuth();
     const { totalItems } = useCart();
@@ -143,6 +146,16 @@ export function Navbar() {
                                 {totalItems}
                             </span>
                         </button>
+                        <button
+                            onClick={() => setIsNotifOpen(!isNotifOpen)}
+                            className="text-gray-600 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer relative"
+                        >
+                            <Bell size={24} />
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center">
+                                {unreadCount}
+                            </span>
+                        </button>
+                        <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
 
                     {/* Mobile Interactions */}
