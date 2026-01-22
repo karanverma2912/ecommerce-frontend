@@ -52,7 +52,7 @@ export function Navbar() {
                     </div>
 
                     {/* Desktop Menu - Desktop: Col 10-12 (Right Aligned) */}
-                    <div className="hidden md:flex md:col-span-3 items-center justify-end gap-6">
+                    <div className="hidden md:flex md:col-span-3 items-center justify-end gap-6 relative">
                         <button
                             onClick={toggleTheme}
                             className="text-gray-600 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors p-1"
@@ -146,15 +146,29 @@ export function Navbar() {
                                 {totalItems}
                             </span>
                         </button>
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => setIsNotifOpen(!isNotifOpen)}
-                            className="text-gray-600 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer relative"
+                            className={`relative text-gray-600 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors cursor-pointer p-1 rounded-full ${isNotifOpen ? "bg-cyan-100/50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 ring-1 ring-cyan-500/20" : ""}`}
                         >
-                            <Bell size={24} />
-                            <span className="absolute -top-1 -right-1 bg-red-600 text-[10px] font-bold text-white w-4 h-4 rounded-full flex items-center justify-center">
-                                {unreadCount}
-                            </span>
-                        </button>
+                            <Bell size={24} className={unreadCount > 0 ? "animate-swing origin-top" : ""} />
+                            <AnimatePresence>
+                                {unreadCount > 0 && (
+                                    <motion.span
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0 }}
+                                        className="absolute -top-0.5 -right-0.5 flex h-4 w-5 items-center justify-center"
+                                    >
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 text-[10px] font-bold text-white items-center justify-center border border-white dark:border-black">
+                                            {unreadCount}
+                                        </span>
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </motion.button>
                         <NotificationDropdown isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
                     </div>
 
