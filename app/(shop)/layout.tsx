@@ -14,7 +14,7 @@ export default function ShopLayout({
         <CartProvider>
             <WishlistProvider>
                 <Navbar />
-                <div className="pt-16 min-h-[calc(100vh-64px)] bg-black">
+                <div className="pt-28 min-h-screen bg-black">
                     {children}
                 </div>
                 <Footer />
